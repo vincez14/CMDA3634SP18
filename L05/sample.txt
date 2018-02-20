@@ -1,1 +1,1 @@
-This is just sample text for the git.
+This is just a sample file for git to track
