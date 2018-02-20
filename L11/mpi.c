@@ -4,12 +4,24 @@
 
 int main(int argc, char **argv) {
 
+  double rank;
+  int size;
+
+  // A. Initialize & Finalize the MPI session
+  MPI_Init(&argc, &argv);
+  
+  // B. Find the rank
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  // C.
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+
   //need running tallies
   long long int Ntotal;
   long long int Ncircle;
 
   //seed random number generator
-  double seed = 1.0;
+  double seed = rank;
   srand48(seed);
 
   for (long long int n=0; n<1000000000;n++) {
@@ -29,5 +41,7 @@ int main(int argc, char **argv) {
 
   printf("Our estimate of pi is %f \n", pi);
 
+  // A. Initialize and finalize the MPI session
+  MPI_Finalize();
   return 0;
 }
