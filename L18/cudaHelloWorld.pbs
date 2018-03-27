@@ -1,0 +1,20 @@
+#! /bin/bash
+#
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -W group_list=newriver
+#PBS -q p100_normal_q
+#PBS -j oe
+#PBS -A CMDA3634SP18
+
+cd $PBS_O_WORKDIR
+
+module purge
+module load gcc
+module load openmpi
+module load cuda
+
+nvcc cudaHelloWorld.cu -o main -arch=sm_60
+
+./main
+
