@@ -123,7 +123,24 @@ void setupElGamal(unsigned int n, unsigned int *p, unsigned int *g,
                                   unsigned int *h, unsigned int *x) {
 
   /* Q1.1 Setup an ElGamal cryptographic system */
-  
+ 
+  // calculate the prime
+  *p = randXbitInt(n);
+
+  // if the number is not prime, continue generating a random p
+  while(isProbablyPrime(*p) != 0) {
+    *p = randXbitInt(n);
+  }
+
+  // once a prime is found, use it to find a generator
+  *g = findGenerator(*p);
+
+  // choose secret key, x
+  *x = randXbitInt(n)%(*p);
+
+  // calculate h (g^x)
+  *h = modExp(*g, *x, *p);
+ 
   printf("ElGamal Setup successful.\n");
   printf("p = %u. \n", *p);  
   printf("g = %u is a generator of Z_%u \n", *g, *p);  
@@ -136,6 +153,17 @@ void ElGamalEncrypt(unsigned int *m, unsigned int *a,
                     unsigned int p, unsigned int g, unsigned int h) {
 
   /* Q2.1 Implement the encryption routine for an ElGamal cryptographic system */
+  
+  // step 1
+  
+
+  // step 2
+  *a = 
+
+  // step 3
+
+  // step 4
+
 }
 
 void ElGamalDecrypt(unsigned int *m, unsigned int a, 

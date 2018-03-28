@@ -29,28 +29,32 @@ int main (int argc, char **argv) {
   //begin with rank 0 getting user's input
   unsigned int n;
 
-
-  /* Q1.2 alter so only Alice performs the ElGamal setup */
-  printf("Enter a number of bits: "); fflush(stdout);
-  char status = scanf("%u",&n);
-
-  //make sure the input makes sense
-  if ((n<3)||(n>31)) {//Updated bounds. 2 is no good, 31 is actually ok
-    printf("Unsupported bit size.\n");
-    return 0;   
-  }
-  printf("\n");
-
-  
   //declare storage for an ElGamal cryptosytem
   unsigned int p, g, h, x;
 
-  //setup an ElGamal cryptosystem
-  setupElGamal(n,&p,&g,&h,&x);
+  /* Q1.2 alter so only Alice performs the ElGamal setup */
+  if(rank == 0) {
+    printf("Enter a number of bits: "); fflush(stdout);
+    char status = scanf("%u",&n);
+
+    //make sure the input makes sense
+    if ((n<3)||(n>31)) {//Updated bounds. 2 is no good, 31 is actually ok
+      printf("Unsupported bit size.\n");
+      return 0;   
+    }
+    printf("\n");
+
+    //setup an ElGamal cryptosystem
+    setupElGamal(n,&p,&g,&h,&x);
+  }
 
 
   /* Q1.3 Share the public key information */
   
+  // mpi broadcast
+  MPI_Bcast(&p, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&g, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&h, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
   //make an array of messages to send/recv
   unsigned int Nmessages = 5;
