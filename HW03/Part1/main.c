@@ -67,42 +67,86 @@ int main (int argc, char **argv) {
   unsigned int *a = 
       (unsigned int *) malloc(Nmessages*sizeof(unsigned int)); 
 
-  //fill the messages with random elements of Z_p
-  printf("Bob's original messages are:    [ ");
-  for (unsigned int i=0;i<Nmessages;i++) {
-    message[i] = randXbitInt(32)%p;
-    printf("%u ", message[i]);
-  }
-  printf("]\n");
-
-  //Encrypt the message with rank 0's ElGamal cyrptographic system
-  printf("Bob's encrypted messages are:   [ ");
-  for (unsigned int i=0;i<Nmessages;i++) {
-    ElGamalEncrypt(message+i,a+i,p,g,h);
-    printf("(%u,%u) ", message[i], a[i]);
-  }
-  printf("]\n");
-
   /* Q2.3 Have only Bob populate messages and then
     send all the encrypted mesages to Alice (rank 0) */
+
+  if(rank == 1) {
+
+    //fill the messages with random elements of Z_p
+    printf("Bob's original messages are:    [ ");
+    for (unsigned int i=0;i<Nmessages;i++) {
+      message[i] = randXbitInt(32)%p;
+      printf("%u ", message[i]);
+    }
+    printf("]\n");
+
+    //Encrypt the message with rank 0's ElGamal cyrptographic system
+    printf("Bob's encrypted messages are:   [ ");
+    for (unsigned int i=0;i<Nmessages;i++) {
+      ElGamalEncrypt(message+i,a+i,p,g,h);
+      printf("(%u,%u) ", message[i], a[i]);
+    }
+    printf("]\n");
+
+    int tag = 0;
+    int destRank = 0;
+
+    MPI_Send(message,
+             Nmessages,
+             MPI_UNSIGNED, 
+             destRank,
+             tag,
+             MPI_COMM_WORLD);
+
+    MPI_Send(a,
+             Nmessages,
+             MPI_UNSIGNED,
+             destRank,
+             tag,
+             MPI_COMM_WORLD);
+  }
 
   /* Q2.3 Have Alice recv all the encrypted mesages 
     from Bob (rank 1) and then decrypt them */
 
-  printf("Alice's recieved messages are:  [ ");
-  for (unsigned int i=0;i<Nmessages;i++) {
-    printf("(%u,%u) ", message[i],a[i]);
-  }
-  printf("]\n");
+  if(rank == 0) {
 
-  //Decrypt the message with rank 0's ElGamal cyrptographic system
-  printf("Alice's decrypted messages are: [ ");
-  for (unsigned int i=0;i<Nmessages;i++) {
-    ElGamalDecrypt(message+i,a[i],p,x);
-    printf("%u ", message[i]);
+    MPI_Status* status;
+    int tag = 0;
+    int sourceRank = 1;
+
+    MPI_Recv(message,
+             Nmessages, 
+             MPI_UNSIGNED, 
+             sourceRank, 
+             tag, 
+             MPI_COMM_WORLD, 
+             &status);
+
+    MPI_Recv(a,
+             Nmessages,
+             MPI_UNSIGNED,
+             sourceRank,
+             tag+1,
+             MPI_COMM_WORLD,
+             &status);
+
+    printf("Alice's recieved messages are:  [ ");
+    for (unsigned int i=0;i<Nmessages;i++) {
+      printf("(%u,%u) ", message[i],a[i]);
+    }
+    printf("]\n");
+
+    //Decrypt the message with rank 0's ElGamal cyrptographic system
+    printf("Alice's decrypted messages are: [ ");
+    for (unsigned int i=0;i<Nmessages;i++) {
+      ElGamalDecrypt(message+i,a[i],p,x);
+      printf("%u ", message[i]);
+    }
+    printf("]\n");
+    printf("\n");
+
   }
-  printf("]\n");
-  printf("\n");
 
   MPI_Finalize();
 

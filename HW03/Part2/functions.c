@@ -122,7 +122,22 @@ unsigned int findGenerator(unsigned int p) {
 void setupElGamal(unsigned int n, unsigned int *p, unsigned int *g, 
                                   unsigned int *h, unsigned int *x) {
 
-  /* Setup an ElGamal cryptographic system */
+  // calculate the prime
+  *p = randXbitInt(n);
+
+  // if the number is not prime, continue generating a random p
+  while(isProbablyPrime(*p) != 0) {
+    *p = randXbitInt(n);
+  }
+
+  // once a prime is found, use it to find a generator
+  *g = findGenerator(*p);
+
+  // choose secret key, x
+  *x = randXbitInt(n)%(*p);
+
+  // calculate h (g^x)
+  *h = modExp(*g, *x, *p);
   
   printf("ElGamal Setup successful.\n");
   printf("p = %u. \n", *p);  
@@ -135,11 +150,26 @@ void setupElGamal(unsigned int n, unsigned int *p, unsigned int *g,
 void ElGamalEncrypt(unsigned int *m, unsigned int *a, 
                     unsigned int p, unsigned int g, unsigned int h) {
 
-  /* implement the encryption routine for an ElGamal cryptographic system */
+  // step 1: find a random y in Z_p
+  unsigned int y = rand()%p;
+
+  // step 2: find a = g^y and s = h^y
+  *a = modExp(g, y, p);
+  unsigned int s = modExp(h, y, p);
+
+  // step 3: create the cyphertext
+  *m = modProd(*m, s, p);
 }
 
 void ElGamalDecrypt(unsigned int *m, unsigned int a, 
                     unsigned int p, unsigned int x) {
 
-  /* implement the decryption routine for an ElGamal cryptographic system */
+  // use secret key x to find shared secret s = a^x = g^(xy)
+  unsigned int s = modExp(a, x, p);
+
+  // find s_inv = s^-1 = s^(p-2)
+  unsigned int s_inv = modExp(s, p-2, p);
+
+  // find the original message, *m
+  *m = modProd(*m, s_inv, p);
 }

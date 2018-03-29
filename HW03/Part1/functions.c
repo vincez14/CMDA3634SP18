@@ -154,20 +154,29 @@ void ElGamalEncrypt(unsigned int *m, unsigned int *a,
 
   /* Q2.1 Implement the encryption routine for an ElGamal cryptographic system */
   
-  // step 1
-  
+  // step 1: find a random y in Z_p
+  unsigned int y = rand()%p;
 
-  // step 2
-  *a = 
+  // step 2: find a = g^y and s = h^y
+  *a = modExp(g, y, p);
+  unsigned int s = modExp(h, y, p);
 
-  // step 3
-
-  // step 4
-
+  // step 3: create the cyphertext
+  *m = modProd(*m, s, p);
 }
 
 void ElGamalDecrypt(unsigned int *m, unsigned int a, 
                     unsigned int p, unsigned int x) {
 
   /* Q2.2 Implement the decryption routine for an ElGamal cryptographic system */
+
+  // use secret key x to find shared secret s = a^x = g^(xy)
+  unsigned int s = modExp(a, x, p);
+
+  // find s_inv = s^-1 = s^(p-2)
+  unsigned int s_inv = modExp(s, p-2, p);
+
+  // find the original message, *m
+  *m = modProd(*m, s_inv, p);
+
 }
