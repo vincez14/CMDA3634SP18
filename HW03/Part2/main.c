@@ -20,14 +20,14 @@ int main (int argc, char **argv) {
 
   srand(seed);
 
-  //begin with rank 0 getting user's input
-  unsigned int n;
+  //begin with rank 0 and have a set number of ints
+  unsigned int n = 8;
 
   /* Q3.1 Make rank 0 setup the ELGamal system and
     broadcast the public key information */
 
-  printf("Enter a number of bits: "); fflush(stdout);
-  char status = scanf("%u",&n);
+  //printf("Enter a number of bits: "); fflush(stdout);
+  //char status = scanf("%u",&n);
 
   if(rank == 0) {
 
