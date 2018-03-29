@@ -121,7 +121,7 @@ int main (int argc, char **argv) {
              sourceRank, 
              tag, 
              MPI_COMM_WORLD, 
-             &status);
+             status);
 
     MPI_Recv(a,
              Nmessages,
@@ -129,7 +129,7 @@ int main (int argc, char **argv) {
              sourceRank,
              tag+1,
              MPI_COMM_WORLD,
-             &status);
+             status);
 
     printf("Alice's recieved messages are:  [ ");
     for (unsigned int i=0;i<Nmessages;i++) {

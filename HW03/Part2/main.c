@@ -63,7 +63,8 @@ int main (int argc, char **argv) {
      distributed amounst the MPI ranks  */
   unsigned int N = p-1; //total loop size
   unsigned int start, end;
-  
+  unsigned int threadNum = 0; 
+ 
   start = 0; 
   end = start + (N/size);
 

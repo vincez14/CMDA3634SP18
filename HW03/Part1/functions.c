@@ -162,7 +162,7 @@ void ElGamalEncrypt(unsigned int *m, unsigned int *a,
   unsigned int s = modExp(h, y, p);
 
   // step 3: create the cyphertext
-  *m = modProd(*m, s, p);
+  *m = modprod(*m, s, p);
 }
 
 void ElGamalDecrypt(unsigned int *m, unsigned int a, 
@@ -177,6 +177,6 @@ void ElGamalDecrypt(unsigned int *m, unsigned int a,
   unsigned int s_inv = modExp(s, p-2, p);
 
   // find the original message, *m
-  *m = modProd(*m, s_inv, p);
+  *m = modprod(*m, s_inv, p);
 
 }
