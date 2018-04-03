@@ -14,10 +14,10 @@ module load openmpi
 
 make
 
-mpiexec -n $1 main;
-mpiexec -n $2 main;
-mpiexec -n $4 main;
-mpiexec -n $8 main;
-mpiexec -n $12 main;
-mpiexec -n $16 main;
-mpiexec -n $20 main;
+mpiexec -n 1 main;
+mpiexec -n 2 main;
+mpiexec -n 4 main;
+mpiexec -n 8 main;
+mpiexec -n 12 main;
+mpiexec -n 16 main;
+mpiexec -n 20 main;
