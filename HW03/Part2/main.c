@@ -20,7 +20,7 @@ int main (int argc, char **argv) {
 
   srand(seed);
 
-  //begin with rank 0 and have a set number of ints
+  // have a set number of ints
   unsigned int n = 8;
 
   /* Q3.1 Make rank 0 setup the ELGamal system and
@@ -63,33 +63,35 @@ int main (int argc, char **argv) {
      distributed amounst the MPI ranks  */
   unsigned int N = p-1; //total loop size
   unsigned int start, end;
-  unsigned int threadNum = 0; 
- 
-  start = 0; 
-  end = start + (N/size);
+  unsigned int offset = 1;
 
+  start = rank*(N/size)+offset;
+  end = start + (N/size);
+ 
   double startTime = MPI_Wtime();
 
+  // Issue with output: I understand that when actually running the main function, there are issues with an endless loop. Unfortunately I do not have the time to continue testing to fix it.  
   while(end != N) {
+
     if(threadNum < (N%size)) {
       end = end + 1;
     }
 
-    if(rank = threadNum) {
+    if(rank == threadNum) {
       
       //loop through the values from 'start' to 'end'
       for (unsigned int i=start;i<end;i++) {
         if (modExp(g,i+1,p)==h)
           printf("Secret key found! x = %u \n", i);
       } // end for loop
+        
+    } // end if(rank == threadNum)
 
-    } // end if(rank = threadNum)
-  
     threadNum = threadNum + 1;
-    start = end+1;
+    start = end + 1;
     end = start + (N/size);
 
-  } // end while loop
+  } // end while
 
   double endTime = MPI_Wtime();  
 
