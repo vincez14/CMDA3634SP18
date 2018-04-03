@@ -21,6 +21,7 @@ To create an image with 4096 x 4096 pixels (last argument will be used to set nu
 #include "png_util.h"
 
 // Q2a: add include for CUDA header file here:
+#include "cuda.h"
 
 #define MXITER 1000
 
@@ -32,7 +33,7 @@ typedef struct {
 }complex_t;
 
 // return iterations before z leaves mandelbrot set for given c
-int testpoint(complex_t c){
+__device__ int testpoint(complex_t c){
   
   int iter;
 
@@ -62,24 +63,34 @@ int testpoint(complex_t c){
 // record the  iteration counts in the count array
 
 // Q2c: transform this function into a CUDA kernel
-void  mandelbrot(int Nre, int Nim, complex_t cmin, complex_t cmax, float *count){ 
+__global__ void  mandelbrot(int Nre, int Nim, complex_t cmin, complex_t cmax, float *count){ 
+
+  int tIdx = threadIdx.x;
+  int tIdy = threadIdx.y;
+
+  int bIdx = blockIdx.x;
+  int bIdy = blockIdx.y;
+
+  int bSizex = blockDim.x;
+  int bSizey = blockDim.y;
+
+  int i = tIdx + bIdx*bSizex; // unique x coordinate
+  int j = tIdy + bIdy*bSizey; // unique y coordinate
+
   int n,m;
+
+  n = i;
+  m = j;
 
   complex_t c;
 
   double dr = (cmax.r-cmin.r)/(Nre-1);
   double di = (cmax.i-cmin.i)/(Nim-1);;
 
-  for(n=0;n<Nim;++n){
-    for(m=0;m<Nre;++m){
-      c.r = cmin.r + dr*m;
-      c.i = cmin.i + di*n;
+  c.r = cmin.r + dr*m;
+  c.i = cmin.i + di*n;
       
-      count[m+n*Nre] = testpoint(c);
-      
-    }
-  }
-
+  count[m+n*Nre] = testpoint(c);
 }
 
 int main(int argc, char **argv){
@@ -97,6 +108,17 @@ int main(int argc, char **argv){
   // storage for the iteration counts
   float *count = (float*) malloc(Nre*Nim*sizeof(float));
 
+  float *ans;
+  cudaMalloc(&ans, Nre*Nim*sizeof(float));
+
+  int Bx,By = round(sqrt(Nthreads)); // Bx * By <= Nthreads
+
+  int Gx = (Nre+Bx-1)/Bx;
+  int Gy = (Nim+By-1)/By;
+
+  dim3 B(Bx, By, 1); // Bx * By threads in thread-block
+  dim3 G(Gx, Gy, 1); // Gx * Gy grid of thread-blocks
+
   // Parameters for a bounding box for "c" that generates an interesting image
   const float centRe = -.759856, centIm= .125547;
   const float diam  = 0.151579;
@@ -112,10 +134,13 @@ int main(int argc, char **argv){
   clock_t start = clock(); //start time in CPU cycles
 
   // compute mandelbrot set
-  mandelbrot(Nre, Nim, cmin, cmax, count); 
+  mandelbrot <<< G, B >>>(Nre, Nim, cmin, cmax, count); 
   
   clock_t end = clock(); //start time in CPU cycles
   
+  // CUDAMEMCPY
+  cudaMemcpy(count, ans, Nre*Nim*sizeof(double),cudaMemcpyDeviceToHost);
+
   // print elapsed time
   printf("elapsed = %f\n", ((double)(end-start))/CLOCKS_PER_SEC);
 
