@@ -206,7 +206,7 @@ void padString(unsigned char* string, unsigned int charsPerInt) {
   } // end while loop
 
   // terminate the string
-  s[l] = '\0';
+  string[l] = '\0';
 
 } // end padString()
 
