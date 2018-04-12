@@ -9,11 +9,14 @@
 #cd $PBS_O_WORKDIR
 
 #module purge
+#module load gcc
 
 make
 
 int Nthreads [7] = {1, 2, 4, 8, 12, 16, 20};
 
-for (int i = 0; i < sizeof(Nthreads)/sizeof(struct Nthreads); i++) {
-    ./main i
-}
+for (int i = 0; i < 7; i++)
+do
+    echo Nbits=17    
+    ./main -np Nthreads[i] Nbits;
+done;
