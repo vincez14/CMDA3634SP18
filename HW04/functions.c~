@@ -152,7 +152,7 @@ void ElGamalEncrypt(unsigned int *m, unsigned int *a, unsigned int Nints,
                     unsigned int p, unsigned int g, unsigned int h) {
 
   /* Q2.1 Parallelize this function with OpenMP   */
-  #pragma omp parallel for
+
   for (unsigned int i=0; i<Nints;i++) {
     //pick y in Z_p randomly
     unsigned int y;
@@ -175,7 +175,7 @@ void ElGamalDecrypt(unsigned int *m, unsigned int *a, unsigned int Nints,
                     unsigned int p, unsigned int x) {
 
   /* Q2.1 Parallelize this function with OpenMP   */
-  #pragma omp parallel for
+
   for (unsigned int i=0; i<Nints;i++) {
     //compute s = a^x
     unsigned int s = modExp(a[i],x,p);
@@ -237,39 +237,7 @@ void convertZToString(unsigned int  *Z,      unsigned int Nints,
                       unsigned char *string, unsigned int Nchars) {
 
   /* Q1.4 Complete this function   */
-  #pragma omp parallel for
-  for (int i = 0; i < Nints; i++) {
-    if (Nchars/Nints == 1) {
-      char letter = (char) Z[i];
-      string[i] = letter;
-    }
-    else if (Nchars/Nints ==2) {
-      int b = Z[i] % 0b100000000; // get the last 8 bits
-      char letter2 = (char) (b);
-      
-      int a = (Z[i]) >> 8;
-      char letter1 = (char) (a);
-
-      string[2*i] = letter1;
-      string[2*i+1] = letter2;
-    }
-    else {
-      int c = Z[i] % 0b100000000;
-      char letter3 = (char) (c);
-
-      int b = (Z[i])>>8 % 0b100000000;
-      char letter2 = (char) (b);
-
-      int a = (Z[i])>>16;
-      char letter1 = (char) (a);
-
-      string[3*i] = letter1;
-      string[3*i+1] = letter2;
-      string[3*i+2] = letter3;
-    }
-  } // end of for loop
-
   /* Q2.2 Parallelize this function with OpenMP   */
 
-} // end convertZToString()
+}
 
