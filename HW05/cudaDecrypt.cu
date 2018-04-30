@@ -74,8 +74,8 @@ int main (int argc, char **argv) {
   unsigned char *message = (unsigned char *) malloc(bufferSize*sizeof(unsigned char));
   char line[256];
 
-  pkfile = fopen("public_key.txt", "r");
-  msgfile = fopen("message.txt", "r");
+  pkfile = fopen("bonus_public_key.txt", "r");
+  msgfile = fopen("bonus_message.txt", "r");
  
   // parse through the public_key file and extract the information
   n = atoi(fgets(line, sizeof(line), pkfile));
@@ -114,13 +114,13 @@ int main (int argc, char **argv) {
     unsigned int *d_r; // storage for the device result
 
     // allocate memory on the device
-    cudaMalloc(&d_a, sizeof(unsigned int));
+    cudaMalloc(&d_r, sizeof(unsigned int));
 
     int Nthreads = 32;
     int Nblocks = (numProc + Nthreads - 1) / Nthreads;
 
     // execute the kernel on the Device
-    kernalDecrypt <<< Nblocks, Nthreads >>> (p, g, h, x, d_r);
+    kernelDecrypt <<< Nblocks, Nthreads >>> (p, g, h, x, d_r);
     cudaDeviceSynchronize();
     
     // copy the result over to the host
