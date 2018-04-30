@@ -35,6 +35,7 @@ int main (int argc, char **argv) {
 
 
   printf("Writing to file.\n");
+  printf("\n");
 
   /* Q1 Complete this function and write the public key data to the file public_key.txt */
  
@@ -49,6 +50,12 @@ int main (int argc, char **argv) {
   fprintf(pkfile, "%d\n", h);
 
   fclose(pkfile);
+
+  printf("n = %d\n", n);
+  printf("p = %d\n", p);
+  printf("g = %d\n", g);
+  printf("h = %d\n", h);
+  printf("\n");
 
   printf("Setup successful.\n");
 
